@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <time.h>
+
+#define size 5
+
+void elements(int arr[]) {
+    printf("Enter the elements (Note: Must be sorted for Binary Search):\n");
+    for(int i=0; i<size; i++) {
+        scanf("%d", &arr[i]);
+    }
+}
+
+void display(int arr[]) {
+    printf("The array:\n");
+    for(int i=0; i<size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+void display2(int comp) {
+    printf("No. of comparisons: %d\n", comp);
+}
+
+void binarysearch(int arr[], int low, int high, int *comparisons, int search) {
+    if (low > high) {
+        printf("\nBinary Search: Number not found\n");
+        return;
+    }
+
+    (*comparisons)++;
+    int mid = (low + high) / 2;
+
+    if (arr[mid] == search) {
+        printf("\nBinary Search: Found at position %d\n", mid);
+        return;
+    }
+
+    if (arr[mid] < search) {
+        binarysearch(arr, mid + 1, high, comparisons, search);
+    } else {
+        binarysearch(arr, low, mid - 1, comparisons, search);
+    }
+}
+
+void linearsearch(int arr[], int index, int *comparisons, int search) {
+    if (index >= size) {
+        printf("\nLinear Search: Number not found\n");
+        return;
+    }
+
+    (*comparisons)++;
+    if (arr[index] == search) {
+        printf("\nLinear Search: Found at position %d\n", index);
+        return;
+    }
+
+    linearsearch(arr, index + 1, comparisons, search);
+}
+
+int main() {
+    int arr[size];
+    int search;
+    int compB = 0;
+    int compL = 0;
+
+    elements(arr);
+    display(arr);
+
+    printf("Which num to search? ");
+    scanf("%d", &search);
+
+    clock_t beginB = clock();
+    binarysearch(arr, 0, size - 1, &compB, search);
+    clock_t endB = clock();
+    display2(compB);
+    printf("Binary execution time: %f seconds\n", (double)(endB - beginB) / CLOCKS_PER_SEC);
+
+    clock_t beginL = clock();
+    linearsearch(arr, 0, &compL, search);
+    clock_t endL = clock();
+    display2(compL);
+    printf("Linear execution time: %f seconds\n", (double)(endL - beginL) / CLOCKS_PER_SEC);
+
+    return 0;
+}
