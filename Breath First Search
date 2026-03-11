@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* newNode(int data) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = data;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+
+struct Node2 {
+    struct Node* tNode;
+    struct Node2* next;
+};
+
+struct Queue {
+    struct Node2* front;
+    struct Node2* rear;
+};
+
+struct Queue* createQueue() {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    if (!q) {
+        perror("malloc failed");
+        exit(EXIT_FAILURE);
+    }
+    q->front = NULL;
+    q->rear = NULL;
+    return q;
+}
+
+void enQueue(struct Queue* q, struct Node* tNode) {
+    struct Node2* newNode2 = (struct Node2*)malloc(sizeof(struct Node2));
+    newNode2->tNode = tNode;
+    newNode2->next = NULL;
+    if (q->rear == NULL) {
+        q->front = newNode2;
+        q->rear = newNode2;
+        return;
+    }
+    q->rear->next = newNode2;
+    q->rear = newNode2;
+}
+
+struct Node* deQueue(struct Queue* q) {
+    if (q->front == NULL)
+        return NULL;
+    struct Node2* temp = q->front;
+    struct Node* tNode = temp->tNode;
+    q->front = q->front->next;
+    if (q->front == NULL)
+        q->rear = NULL;
+    free(temp);
+    return tNode;
+}
+
+int isEmpty(struct Queue* q) {
+    return q->front == NULL;
+}
+
+void breadthFirstSearch(struct Node* root) {
+    if (root == NULL) return;
+
+    struct Queue* q = createQueue();
+    enQueue(q, root);
+
+    while (!isEmpty(q)) {
+        struct Node* current = deQueue(q);
+        printf("%d ", current->data);
+
+        if (current->left != NULL) {
+            enQueue(q, current->left);
+        }
+
+        if (current->right != NULL) {
+            enQueue(q, current->right);
+        }
+    }
+    free(q);
+}
+
+int main() {
+    struct Node* root = newNode(1);
+    root->left = newNode(2);
+    root->right = newNode(3);
+    root->left->left = newNode(4);
+    root->left->right = newNode(5);
+    root->right->left = newNode(6);
+    root->right->right = newNode(7);
+
+    printf("BFS Traversal: ");
+    breadthFirstSearch(root);
+    printf("\n");
+
+    return 0;
+}
