@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int adj[MAX][MAX];
+int indegree[MAX];
+int queue[MAX];
+int front = 0, rear = -1;
+
+void enqueue(int vertex) {
+    queue[++rear] = vertex;
+}
+
+int dequeue() {
+    return queue[front++];
+}
+
+
+void topologicalSort(int vertices) {
+    int i, j;
+    //Counting the number of indegree of a vertex
+    for (i = 0; i < vertices; i++) {
+        indegree[i] = 0;
+        for (j = 0; j < vertices; j++) {
+            if (adj[j][i] == 1)
+                indegree[i]++;
+        }
+    }
+
+    //Checking if any vertex has 0 indegree, if yes, enqueued
+    for (i = 0; i < vertices; i++) {
+        if (indegree[i] == 0)
+            enqueue(i);
+    }
+
+    //Printing and dequeuing of vertices
+    int count = 0;
+    printf("Topological Order: ");
+    while (front <= rear) {
+        int current = dequeue();
+        printf("%d ", current);
+        count++;
+
+        for (i = 0; i < vertices; i++) {
+            if (adj[current][i] == 1) {
+                indegree[i]--;
+                if (indegree[i] == 0)
+                    enqueue(i);
+            }
+        }
+    }
+
+
+    if (count != vertices) {
+        printf("\nCycle detected. Topological sort not possible.\n");
+    }
+}
+
+int main() {
+    int vertices, edges;
+    int i, origin, dest;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &vertices);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+
+    //Creating and initializing adj matrix = 0
+    for (i = 0; i < vertices; i++)
+        for (int j = 0; j < vertices; j++)
+            adj[i][j] = 0;
+    //Taking input for edges and defining the adj matrix
+    printf("Enter edges u and v:\n");
+    for (i = 0; i < edges; i++) {
+        scanf("%d %d", &origin, &dest);
+        adj[origin][dest] = 1;
+    }
+
+    topologicalSort(vertices);
+
+    return 0;
+}
